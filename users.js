@@ -2,18 +2,16 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var users = [];
 var addUser = function (_a) {
-    var id = _a.id, name = _a.name, room = _a.room;
-    //trim() willl remove all white space in a string
-    if (!name || !room) {
-        return new Error('name or room is missing.');
+    var id = _a.id, name = _a.name;
+    if (!name) {
+        return new Error('userName is missing.');
     }
     name = name.trim().toLowerCase();
-    room = room.trim().toLowerCase();
-    var existingUser = users.find(function (user) { return user.name === name && user.room === room; });
+    var existingUser = users.find(function (user) { return user.name === name; });
     if (existingUser) {
         return { error: 'This username is taken.' };
     }
-    var user = { id: id, name: name, room: room };
+    var user = { id: id, name: name };
     users.push(user);
     return { user: user };
 };
@@ -25,7 +23,5 @@ var removeUser = function (id) {
 var getUser = function (id) {
     return users.find(function (user) { return user.id === id; });
 };
-var getUsersInRoom = function (room) {
-    return users.filter(function (user) { return user.room === room; });
-};
+var getUsersInRoom = function () { return users.filter(function (user) { return user; }); };
 module.exports = { addUser: addUser, removeUser: removeUser, getUser: getUser, getUsersInRoom: getUsersInRoom };

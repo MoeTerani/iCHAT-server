@@ -27,15 +27,16 @@ io.on('connection', (socket: any) => {
 
   socket.on(
     'join',
-    ({ name = 'Moe', room = '1' }, callback: (arg?: any) => void) => {
-      const { error, user } = addUser({ id: socket.id, name, room });
+    ({ name }: { name: string }, callback: (arg?: any) => void) => {
+      const { error, user } = addUser({ id: socket.id, name });
 
       if (error) {
+        console.log(error)
         logger.error({
           description: 'Unavailable username',
-          reason: errorMessage,
+          reason: error,
           socketID: socket.id,
-          username: user.name,
+          // username: user.name,
         });
         errorMessage = 'Unavailable username';
         socket.disconnect(true);
@@ -50,31 +51,29 @@ io.on('connection', (socket: any) => {
 
       socket.emit('message', {
         user: 'admin',
-        text: `${user.name} welcome to the room ${user.room}`,
+        text: `${user.name} welcome to the realtime chat `,
       });
 
       socket.broadcast
-        .to(user.room)
         .emit('message', { user: 'admin', text: `${user.name} has joined!` });
 
-      socket.join(user.room);
+      socket.join();
 
-      io.to(user.room).emit('roomData', {
-        room: user.room,
-        users: getUsersInRoom(user.room),
+      io.emit('activeUsers', {
+        users: getUsersInRoom(),
       });
 
       callback();
     }
   );
 
+
   socket.on('sendMessage', (msg: string, callback: () => void) => {
     const user = getUser(socket.id);
 
-    io.to(user.room).emit('message', { user: user.name, text: msg });
-    io.to(user.room).emit('roomData', {
-      room: user.room,
-      users: getUsersInRoom(user.room),
+    io.emit('message', { user: user.name, text: msg });
+    io.emit('activeUsers', {
+      users: getUsersInRoom(),
     });
 
     callback();
@@ -84,9 +83,12 @@ io.on('connection', (socket: any) => {
     const user = removeUser(socket.id);
 
     if (user) {
-      io.to(user.room).emit('message', {
+      io.emit('message', {
         user: 'admin',
         text: `${user.name} has left!`,
+      });
+      io.emit('activeUsers', {
+        users: getUsersInRoom(),
       });
       logger.info({
         description: `${user.name} has been disconnected!`,
@@ -96,12 +98,13 @@ io.on('connection', (socket: any) => {
       socket.disconnect(true);
     }
   });
+
   socket.on('inActiveUser', () => {
     const user = removeUser(socket.id);
 
     if (user) {
       console.log('inactivity ');
-      io.to(user.room).emit('message', {
+      io.emit('message', {
         user: 'admin',
         text: `${user.name} was disconnected due to
         inactivity!`,

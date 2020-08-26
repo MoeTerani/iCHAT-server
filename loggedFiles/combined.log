@@ -1,0 +1,9 @@
+{"message":{"description":"e has joined the chat!","socketID":"G8pKiLRs97VLazy2AAAD","name":"e"},"level":"info","timestamp":"2020-08-26 13:59:11"}
+{"message":{"description":"c has joined the chat!","socketID":"qIzAsrYPdVnUEb5hAAAF","name":"c"},"level":"info","timestamp":"2020-08-26 14:00:08"}
+{"message":{"description":"cc has joined the chat!","socketID":"LdUZphdxxkHLguaYAAAK","name":"cc"},"level":"info","timestamp":"2020-08-26 14:00:11"}
+{"message":{"description":"c has joined the chat!","socketID":"r2XZOTF1NGxzhkLnAAAJ","name":"c"},"level":"info","timestamp":"2020-08-26 14:00:52"}
+{"message":{"description":"c has joined the chat!","socketID":"WHV40OeN_6jiPC9yAAAK","name":"c"},"level":"info","timestamp":"2020-08-26 14:03:53"}
+{"message":{"description":"Unavailable username","reason":" ","socketID":"-cyTrpqSyv4szKQnAAAP"},"level":"error","timestamp":"2020-08-26 14:03:56"}
+{"message":{"description":"d has joined the chat!","socketID":"AKdQsgEWwjiAtApPAAAK","name":"d"},"level":"info","timestamp":"2020-08-26 14:13:36"}
+{"message":{"description":"Unavailable username","reason":"This username is taken.","socketID":"AMGHp9MB-wAAXpbGAAAP"},"level":"error","timestamp":"2020-08-26 14:13:38"}
+{"message":{"description":"d has been disconnected!","socketID":"AKdQsgEWwjiAtApPAAAK","name":"d"},"level":"info","timestamp":"2020-08-26 14:15:56"}
