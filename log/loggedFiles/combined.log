@@ -1,0 +1,4 @@
+{"message":{"description":"r has joined the chat!","socketID":"pKrHcKn1JZCkMbAVAAAB","name":"r"},"level":"info","timestamp":"2020-08-27 09:20:44"}
+{"message":{"description":"rr has joined the chat!","socketID":"F4z0MraBYQTXSqRZAAAG","name":"rr"},"level":"info","timestamp":"2020-08-27 09:20:46"}
+{"message":{"description":"rrhas been disconnected due to inactivity!","socketID":"F4z0MraBYQTXSqRZAAAG","name":"rr"},"level":"info","timestamp":"2020-08-27 09:21:24"}
+{"message":{"description":"rhas been disconnected due to inactivity!","socketID":"pKrHcKn1JZCkMbAVAAAB","name":"r"},"level":"info","timestamp":"2020-08-27 09:21:26"}

@@ -1,12 +1,17 @@
 const app = require('express')();
 const server = require('http').createServer(app);
 const winston = require('winston');
-const logger = require('./logger');
+const logger = require('./log/logger');
 const cors = require('cors');
 
 app.use(cors());
 
-const { addUser, removeUser, getUser, getUsersInRoom } = require('./users');
+const {
+  addUser,
+  removeUser,
+  getUser,
+  getUsersInRoom,
+} = require('./utilities/users');
 
 // SOCKET.IO
 const options = {
@@ -31,7 +36,7 @@ io.on('connection', (socket: any) => {
       const { error, user } = addUser({ id: socket.id, name });
 
       if (error) {
-        console.log(error)
+        console.log(error);
         logger.error({
           description: 'Unavailable username',
           reason: error,
@@ -54,8 +59,10 @@ io.on('connection', (socket: any) => {
         text: `${user.name} welcome to the realtime chat `,
       });
 
-      socket.broadcast
-        .emit('message', { user: 'admin', text: `${user.name} has joined!` });
+      socket.broadcast.emit('message', {
+        user: 'admin',
+        text: `${user.name} has joined!`,
+      });
 
       socket.join();
 
@@ -66,7 +73,6 @@ io.on('connection', (socket: any) => {
       callback();
     }
   );
-
 
   socket.on('sendMessage', (msg: string, callback: () => void) => {
     const user = getUser(socket.id);
@@ -120,7 +126,7 @@ io.on('connection', (socket: any) => {
 });
 
 //MIDDLEWARE
-const router = require('./router');
+const router = require('./routes/router');
 app.use(router);
 
 //SERVER AND PORT

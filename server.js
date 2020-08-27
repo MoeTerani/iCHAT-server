@@ -2,10 +2,10 @@
 var app = require('express')();
 var server = require('http').createServer(app);
 var winston = require('winston');
-var logger = require('./logger');
+var logger = require('./log/logger');
 var cors = require('cors');
 app.use(cors());
-var _a = require('./users'), addUser = _a.addUser, removeUser = _a.removeUser, getUser = _a.getUser, getUsersInRoom = _a.getUsersInRoom;
+var _a = require('./utilities/users'), addUser = _a.addUser, removeUser = _a.removeUser, getUser = _a.getUser, getUsersInRoom = _a.getUsersInRoom;
 // SOCKET.IO
 var options = {
 /* ... */
@@ -44,8 +44,10 @@ io.on('connection', function (socket) {
             user: 'admin',
             text: user.name + " welcome to the realtime chat ",
         });
-        socket.broadcast
-            .emit('message', { user: 'admin', text: user.name + " has joined!" });
+        socket.broadcast.emit('message', {
+            user: 'admin',
+            text: user.name + " has joined!",
+        });
         socket.join();
         io.emit('activeUsers', {
             users: getUsersInRoom(),
@@ -96,7 +98,7 @@ io.on('connection', function (socket) {
     });
 });
 //MIDDLEWARE
-var router = require('./router');
+var router = require('./routes/router');
 app.use(router);
 //SERVER AND PORT
 var PORT = process.env.PORT || 5000;
