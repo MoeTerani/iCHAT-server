@@ -11,6 +11,16 @@ const {
   getAllUsers,
 } = require('../utilities/users');
 
+let TimeOut: any;
+// in MS
+const inactivityTime = 30000;
+
+function startTimeOut(socket: any, inactivityTime: number) {
+  TimeOut = setTimeout(() => {
+    socket.emit('timeOut');
+  }, inactivityTime);
+}
+
 // SOCKET.IO
 const socketIoInit = (server: any) => {
   const options = {
@@ -34,20 +44,8 @@ const socketIoInit = (server: any) => {
       ({ name }: { name: string }, callback: (arg?: any) => void) => {
         try {
           validator(name);
-          const { user } = addUser({ id: socket.id, name });
 
-          // if (error) {
-          //   console.log(error);
-          //   logger.error({
-          //     description: 'Unavailable username',
-          //     reason: error,
-          //     socketID: socket.id,
-          //     // username: user.name,
-          //   });
-          //   errorMessage = 'Unavailable username';
-          //   socket.disconnect(true);
-          //   return callback(error);
-          // }
+          const { user } = addUser({ id: socket.id, name });
 
           logger.info({
             description: `${user.name} has joined the chat!`,
@@ -89,6 +87,11 @@ const socketIoInit = (server: any) => {
     );
 
     socket.on('sendMessage', (msg: string, callback: () => void) => {
+      if (TimeOut) {
+        clearTimeout(TimeOut);
+        TimeOut = null;
+      }
+      startTimeOut(socket, inactivityTime);
       const user = getUser(socket.id);
 
       io.emit('message', { user: user.name, text: msg });
@@ -123,7 +126,6 @@ const socketIoInit = (server: any) => {
       const user = removeUser(socket.id);
 
       if (user) {
-        console.log('inactivity ');
         io.emit('message', {
           user: 'admin',
           text: `${user.name} was disconnected due to

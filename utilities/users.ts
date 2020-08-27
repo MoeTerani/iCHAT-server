@@ -7,14 +7,14 @@ const validator = (name: string) => {
   /*   username is validated against the following rules:
     - is a required string
     -must contain only alphanumeric characters
-    -at least 3 characters long but no more than 30
+    -at least 3 characters long but no more than 12
     -shouldn't already exist
     */
   const schema = Joi.object({
-    username: Joi.string().alphanum().min(3).max(30).required(),
+    username: Joi.string().alphanum().min(3).max(12).required(),
   });
 
-  const { error, value } = schema.validate({ username: name });
+  const { error } = schema.validate({ username: name });
 
   if (error) {
     throw new Error(error.message);

@@ -4,6 +4,14 @@ var winston = require('winston');
 var logger = require('../log/logger');
 var moment = require('moment');
 var _a = require('../utilities/users'), validator = _a.validator, addUser = _a.addUser, removeUser = _a.removeUser, getUser = _a.getUser, getAllUsers = _a.getAllUsers;
+var TimeOut;
+// in MS
+var inactivityTime = 30000;
+function startTimeOut(socket, inactivityTime) {
+    TimeOut = setTimeout(function () {
+        socket.emit('timeOut');
+    }, inactivityTime);
+}
 // SOCKET.IO
 var socketIoInit = function (server) {
     var options = {
@@ -25,18 +33,6 @@ var socketIoInit = function (server) {
             try {
                 validator(name);
                 var user = addUser({ id: socket.id, name: name }).user;
-                // if (error) {
-                //   console.log(error);
-                //   logger.error({
-                //     description: 'Unavailable username',
-                //     reason: error,
-                //     socketID: socket.id,
-                //     // username: user.name,
-                //   });
-                //   errorMessage = 'Unavailable username';
-                //   socket.disconnect(true);
-                //   return callback(error);
-                // }
                 logger.info({
                     description: user.name + " has joined the chat!",
                     socketID: socket.id,
@@ -69,6 +65,11 @@ var socketIoInit = function (server) {
             }
         });
         socket.on('sendMessage', function (msg, callback) {
+            if (TimeOut) {
+                clearTimeout(TimeOut);
+                TimeOut = null;
+            }
+            startTimeOut(socket, inactivityTime);
             var user = getUser(socket.id);
             io.emit('message', { user: user.name, text: msg });
             io.emit('activeUsers', {
@@ -97,7 +98,6 @@ var socketIoInit = function (server) {
         socket.on('inActiveUser', function () {
             var user = removeUser(socket.id);
             if (user) {
-                console.log('inactivity ');
                 io.emit('message', {
                     user: 'admin',
                     text: user.name + " was disconnected due to\n        inactivity!",

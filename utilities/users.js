@@ -6,13 +6,13 @@ var validator = function (name) {
     /*   username is validated against the following rules:
       - is a required string
       -must contain only alphanumeric characters
-      -at least 3 characters long but no more than 30
+      -at least 3 characters long but no more than 12
       -shouldn't already exist
       */
     var schema = Joi.object({
-        username: Joi.string().alphanum().min(3).max(30).required(),
+        username: Joi.string().alphanum().min(3).max(12).required(),
     });
-    var _a = schema.validate({ username: name }), error = _a.error, value = _a.value;
+    var error = schema.validate({ username: name }).error;
     if (error) {
         throw new Error(error.message);
     }
