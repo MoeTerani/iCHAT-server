@@ -4,6 +4,7 @@ var server = require('http').createServer(app);
 var cors = require('cors');
 var socketIoInit = require('./socket/socket').socketIoInit;
 app.use(cors());
+//Initialize socket.io
 socketIoInit(server);
 //MIDDLEWARE
 var router = require('./routes/router');

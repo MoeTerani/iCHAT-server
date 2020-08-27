@@ -1,25 +1,34 @@
-export { };
-let users: Array<{ id: number; name: string; }> = [];
+export {};
+const Joi = require('joi');
 
-const addUser = ({
-  id,
-  name,
-}: {
-  id: number;
-  name: string;
-}) => {
+let users: Array<{ id: number; name: string }> = [];
 
-  if (!name) {
-    return new Error('userName is missing.');
+const validator = (name: string) => {
+  /*   username is validated against the following rules:
+    - is a required string
+    -must contain only alphanumeric characters
+    -at least 3 characters long but no more than 30
+    -shouldn't already exist
+    */
+  const schema = Joi.object({
+    username: Joi.string().alphanum().min(3).max(30).required(),
+  });
+
+  const { error, value } = schema.validate({ username: name });
+
+  if (error) {
+    throw new Error(error.message);
   }
+
+  // Check if the userName exist
   name = name.trim().toLowerCase();
-
-  const existingUser = users.find(
-    (user) => user.name === name
-  );
+  const existingUser = users.find((user) => user.name === name);
   if (existingUser) {
-    return { error: 'This username is taken.' };
+    throw new Error('This username is taken.');
   }
+};
+
+const addUser = ({ id, name }: { id: number; name: string }) => {
   const user = { id, name };
   users.push(user);
 
@@ -32,9 +41,18 @@ const removeUser = (id: number) => {
   if (index !== -1) return users.splice(index, 1)[0];
 };
 
+const removeAllUsers = () => users.splice(0, users.length);
+
 const getUser = (id: number) =>
   users.find((user: { id: number }) => user.id === id);
 
-const getUsersInRoom = () => users.filter((user) => user);
+const getAllUsers = () => users.filter((user) => user);
 
-module.exports = { addUser, removeUser, getUser, getUsersInRoom };
+module.exports = {
+  validator,
+  addUser,
+  removeUser,
+  removeAllUsers,
+  getUser,
+  getAllUsers,
+};

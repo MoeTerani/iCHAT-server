@@ -1,12 +1,14 @@
 export {};
 const winston = require('winston');
 const logger = require('../log/logger');
+const moment = require('moment');
 
 const {
+  validator,
   addUser,
   removeUser,
   getUser,
-  getUsersInRoom,
+  getAllUsers,
 } = require('../utilities/users');
 
 // SOCKET.IO
@@ -30,44 +32,59 @@ const socketIoInit = (server: any) => {
     socket.on(
       'join',
       ({ name }: { name: string }, callback: (arg?: any) => void) => {
-        const { error, user } = addUser({ id: socket.id, name });
+        try {
+          validator(name);
+          const { user } = addUser({ id: socket.id, name });
 
-        if (error) {
-          console.log(error);
-          logger.error({
-            description: 'Unavailable username',
-            reason: error,
+          // if (error) {
+          //   console.log(error);
+          //   logger.error({
+          //     description: 'Unavailable username',
+          //     reason: error,
+          //     socketID: socket.id,
+          //     // username: user.name,
+          //   });
+          //   errorMessage = 'Unavailable username';
+          //   socket.disconnect(true);
+          //   return callback(error);
+          // }
+
+          logger.info({
+            description: `${user.name} has joined the chat!`,
             socketID: socket.id,
-            // username: user.name,
+            name: user.name,
           });
-          errorMessage = 'Unavailable username';
+
+          socket.emit('message', {
+            user: 'admin',
+            text: `${user.name} welcome to the realtime chat `,
+            time: moment().format('LT'),
+          });
+
+          socket.broadcast.emit('message', {
+            user: 'admin',
+            text: `${user.name} has joined!`,
+            time: moment().format('LT'),
+          });
+
+          // socket.join();
+
+          io.emit('activeUsers', {
+            users: getAllUsers(),
+          });
+
+          //   callback();
+        } catch (error) {
+          socket.emit('login_error', { errorMessage: error.message });
+
+          logger.error({
+            description: 'Login Fail',
+            reason: error.message,
+            socketID: socket.id,
+          });
+
           socket.disconnect(true);
-          return callback(error);
         }
-
-        logger.info({
-          description: `${user.name} has joined the chat!`,
-          socketID: socket.id,
-          name: user.name,
-        });
-
-        socket.emit('message', {
-          user: 'admin',
-          text: `${user.name} welcome to the realtime chat `,
-        });
-
-        socket.broadcast.emit('message', {
-          user: 'admin',
-          text: `${user.name} has joined!`,
-        });
-
-        socket.join();
-
-        io.emit('activeUsers', {
-          users: getUsersInRoom(),
-        });
-
-        callback();
       }
     );
 
@@ -76,7 +93,7 @@ const socketIoInit = (server: any) => {
 
       io.emit('message', { user: user.name, text: msg });
       io.emit('activeUsers', {
-        users: getUsersInRoom(),
+        users: getAllUsers(),
       });
 
       callback();
@@ -91,7 +108,7 @@ const socketIoInit = (server: any) => {
           text: `${user.name} has left!`,
         });
         io.emit('activeUsers', {
-          users: getUsersInRoom(),
+          users: getAllUsers(),
         });
         logger.info({
           description: `${user.name} has been disconnected!`,

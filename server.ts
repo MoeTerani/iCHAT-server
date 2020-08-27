@@ -2,8 +2,10 @@ const app = require('express')();
 const server = require('http').createServer(app);
 const cors = require('cors');
 const { socketIoInit } = require('./socket/socket');
+
 app.use(cors());
 
+//Initialize socket.io
 socketIoInit(server);
 
 //MIDDLEWARE

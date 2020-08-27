@@ -1,9 +1,9 @@
 export {};
 import { error } from 'console';
+import * as express from 'express';
 
-const express = require('express');
 const router = express.Router();
-router.get('/', (req: any, res: any) => {
+router.get('/', (req: express.Request, res: express.Response) => {
   res.send('Server is up and running');
 });
 
