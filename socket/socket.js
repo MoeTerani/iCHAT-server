@@ -5,13 +5,13 @@ var logger = require('../log/logger');
 var moment = require('moment');
 var _a = require('../utilities/users'), validator = _a.validator, addUser = _a.addUser, removeUser = _a.removeUser, getUser = _a.getUser, getAllUsers = _a.getAllUsers;
 var TimeOut;
-// in MS
-var inactivityTime = 30000;
-function startTimeOut(socket, inactivityTime) {
-    TimeOut = setTimeout(function () {
+// inactivity time in milliseconds
+var inactivityTime = 10000;
+var startTimeOut = function (socket, inactivityTime) {
+    return setTimeout(function () {
         socket.emit('timeOut');
     }, inactivityTime);
-}
+};
 // SOCKET.IO
 var socketIoInit = function (server) {
     var options = {
@@ -32,7 +32,7 @@ var socketIoInit = function (server) {
             var name = _a.name;
             try {
                 validator(name);
-                var user = addUser({ id: socket.id, name: name }).user;
+                var user = addUser({ id: socket.id, name: name, active: true }).user;
                 logger.info({
                     description: user.name + " has joined the chat!",
                     socketID: socket.id,
@@ -64,12 +64,14 @@ var socketIoInit = function (server) {
                 socket.disconnect(true);
             }
         });
+        var inactivity = startTimeOut(socket, inactivityTime);
         socket.on('sendMessage', function (msg, callback) {
-            if (TimeOut) {
-                clearTimeout(TimeOut);
-                TimeOut = null;
-            }
-            startTimeOut(socket, inactivityTime);
+            // if (inactivity) {
+            //   clearTimeout(inactivity);
+            //   inactivity = null;
+            // }
+            clearTimeout(inactivity);
+            inactivity = startTimeOut(socket, inactivityTime);
             var user = getUser(socket.id);
             io.emit('message', { user: user.name, text: msg });
             io.emit('activeUsers', {

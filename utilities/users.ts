@@ -46,7 +46,8 @@ const removeAllUsers = () => users.splice(0, users.length);
 const getUser = (id: number) =>
   users.find((user: { id: number }) => user.id === id);
 
-const getAllUsers = () => users.filter((user) => user);
+// const getAllUsers = () => users.filter((user) => user);
+const getAllUsers = () => users;
 
 module.exports = {
   validator,

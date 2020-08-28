@@ -12,14 +12,13 @@ const {
 } = require('../utilities/users');
 
 let TimeOut: any;
-// in MS
-const inactivityTime = 30000;
+// inactivity time in milliseconds
+const inactivityTime = 10000;
 
-function startTimeOut(socket: any, inactivityTime: number) {
-  TimeOut = setTimeout(() => {
+const startTimeOut = (socket: any, inactivityTime: number) =>
+  setTimeout(() => {
     socket.emit('timeOut');
   }, inactivityTime);
-}
 
 // SOCKET.IO
 const socketIoInit = (server: any) => {
@@ -45,7 +44,7 @@ const socketIoInit = (server: any) => {
         try {
           validator(name);
 
-          const { user } = addUser({ id: socket.id, name });
+          const { user } = addUser({ id: socket.id, name, active: true });
 
           logger.info({
             description: `${user.name} has joined the chat!`,
@@ -85,13 +84,14 @@ const socketIoInit = (server: any) => {
         }
       }
     );
-
+    let inactivity = startTimeOut(socket, inactivityTime);
     socket.on('sendMessage', (msg: string, callback: () => void) => {
-      if (TimeOut) {
-        clearTimeout(TimeOut);
-        TimeOut = null;
-      }
-      startTimeOut(socket, inactivityTime);
+      // if (inactivity) {
+      //   clearTimeout(inactivity);
+      //   inactivity = null;
+      // }
+      clearTimeout(inactivity);
+      inactivity = startTimeOut(socket, inactivityTime);
       const user = getUser(socket.id);
 
       io.emit('message', { user: user.name, text: msg });

@@ -38,7 +38,8 @@ var removeAllUsers = function () { return users.splice(0, users.length); };
 var getUser = function (id) {
     return users.find(function (user) { return user.id === id; });
 };
-var getAllUsers = function () { return users.filter(function (user) { return user; }); };
+// const getAllUsers = () => users.filter((user) => user);
+var getAllUsers = function () { return users; };
 module.exports = {
     validator: validator,
     addUser: addUser,
