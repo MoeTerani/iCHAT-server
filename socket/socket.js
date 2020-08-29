@@ -5,7 +5,7 @@ var logger = require('../log/logger');
 var moment = require('moment');
 var _a = require('../utilities/users'), dataValidator = _a.dataValidator, addUser = _a.addUser, removeUser = _a.removeUser, getUser = _a.getUser, getAllUsers = _a.getAllUsers;
 // inactivity time in milliseconds
-var inactivityTime = 30000;
+var inactivityTime = 3000000;
 var startTimeOut = function (socket, inactivityTime) {
     return setTimeout(function () {
         socket.emit('timeOut');
@@ -31,7 +31,8 @@ var socketIoInit = function (server) {
             var name = _a.name;
             try {
                 dataValidator(name);
-                var user = addUser({ id: socket.id, name: name }).user;
+                var avatar = 'https://avatars2.githubusercontent.com/u/30356761?s=400&u=d7843e8ce40d3e48e2bb4a06f244c59af51c92ef&v=4';
+                var user = addUser({ id: socket.id, name: name, avatar: avatar }).user;
                 logger.info({
                     description: user.name + " has joined the chat!",
                     socketID: socket.id,
@@ -79,7 +80,8 @@ var socketIoInit = function (server) {
             });
             callback();
         });
-        socket.on('disconnect', function () {
+        socket.on('disconnect', function (reason) {
+            console.log({ reason: reason });
             var user = removeUser(socket.id);
             if (user) {
                 io.emit('message', {

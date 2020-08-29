@@ -24,8 +24,8 @@ var dataValidator = function (name) {
     }
 };
 var addUser = function (_a) {
-    var id = _a.id, name = _a.name;
-    var user = { id: id, name: name };
+    var id = _a.id, name = _a.name, avatar = _a.avatar;
+    var user = { id: id, name: name, avatar: avatar };
     users.push(user);
     return { user: user };
 };

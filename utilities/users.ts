@@ -28,8 +28,16 @@ const dataValidator = (name: string) => {
   }
 };
 
-const addUser = ({ id, name }: { id: number; name: string }) => {
-  const user = { id, name };
+const addUser = ({
+  id,
+  name,
+  avatar,
+}: {
+  id: number;
+  name: string;
+  avatar: string;
+}) => {
+  const user = { id, name, avatar };
   users.push(user);
 
   return { user };

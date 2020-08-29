@@ -12,7 +12,7 @@ const {
 } = require('../utilities/users');
 
 // inactivity time in milliseconds
-const inactivityTime = 30000;
+const inactivityTime = 3000000;
 
 const startTimeOut = (socket: any, inactivityTime: number) =>
   setTimeout(() => {
@@ -42,8 +42,9 @@ const socketIoInit = (server: any) => {
       ({ name }: { name: string }, callback: (arg?: any) => void) => {
         try {
           dataValidator(name);
-
-          const { user } = addUser({ id: socket.id, name });
+          let avatar =
+            'https://avatars2.githubusercontent.com/u/30356761?s=400&u=d7843e8ce40d3e48e2bb4a06f244c59af51c92ef&v=4';
+          const { user } = addUser({ id: socket.id, name, avatar });
 
           logger.info({
             description: `${user.name} has joined the chat!`,
@@ -103,7 +104,8 @@ const socketIoInit = (server: any) => {
       callback();
     });
 
-    socket.on('disconnect', () => {
+    socket.on('disconnect', (reason: any) => {
+      console.log({ reason });
       const user = removeUser(socket.id);
 
       if (user) {
