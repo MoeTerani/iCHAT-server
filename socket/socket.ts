@@ -13,7 +13,7 @@ const {
 
 let TimeOut: any;
 // inactivity time in milliseconds
-const inactivityTime = 10000;
+const inactivityTime = 30000;
 
 const startTimeOut = (socket: any, inactivityTime: number) =>
   setTimeout(() => {
@@ -108,7 +108,7 @@ const socketIoInit = (server: any) => {
       if (user) {
         io.emit('message', {
           user: 'admin',
-          text: `${user.name} has left!`,
+          text: `${user.name} left the chat!`,
         });
         io.emit('activeUsers', {
           users: getAllUsers(),

@@ -6,7 +6,7 @@ var moment = require('moment');
 var _a = require('../utilities/users'), validator = _a.validator, addUser = _a.addUser, removeUser = _a.removeUser, getUser = _a.getUser, getAllUsers = _a.getAllUsers;
 var TimeOut;
 // inactivity time in milliseconds
-var inactivityTime = 10000;
+var inactivityTime = 30000;
 var startTimeOut = function (socket, inactivityTime) {
     return setTimeout(function () {
         socket.emit('timeOut');
@@ -84,7 +84,7 @@ var socketIoInit = function (server) {
             if (user) {
                 io.emit('message', {
                     user: 'admin',
-                    text: user.name + " has left!",
+                    text: user.name + " left the chat!",
                 });
                 io.emit('activeUsers', {
                     users: getAllUsers(),
