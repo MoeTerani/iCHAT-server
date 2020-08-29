@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var Joi = require('joi');
 var users = [];
-var validator = function (name) {
+var dataValidator = function (name) {
     /*   username is validated against the following rules:
       - is a required string
       -must contain only alphanumeric characters
@@ -10,7 +10,7 @@ var validator = function (name) {
       -shouldn't already exist
       */
     var schema = Joi.object({
-        username: Joi.string().alphanum().min(3).max(12).required(),
+        username: Joi.string().alphanum().min(3).max(20).required(),
     });
     var error = schema.validate({ username: name }).error;
     if (error) {
@@ -41,7 +41,7 @@ var getUser = function (id) {
 // const getAllUsers = () => users.filter((user) => user);
 var getAllUsers = function () { return users; };
 module.exports = {
-    validator: validator,
+    dataValidator: dataValidator,
     addUser: addUser,
     removeUser: removeUser,
     removeAllUsers: removeAllUsers,

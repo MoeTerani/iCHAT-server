@@ -4,14 +4,13 @@ const logger = require('../log/logger');
 const moment = require('moment');
 
 const {
-  validator,
+  dataValidator,
   addUser,
   removeUser,
   getUser,
   getAllUsers,
 } = require('../utilities/users');
 
-let TimeOut: any;
 // inactivity time in milliseconds
 const inactivityTime = 30000;
 
@@ -42,15 +41,17 @@ const socketIoInit = (server: any) => {
       'join',
       ({ name }: { name: string }, callback: (arg?: any) => void) => {
         try {
-          validator(name);
+          dataValidator(name);
 
-          const { user } = addUser({ id: socket.id, name, active: true });
+          const { user } = addUser({ id: socket.id, name });
 
           logger.info({
             description: `${user.name} has joined the chat!`,
             socketID: socket.id,
             name: user.name,
           });
+
+          socket.emit('successful-connection', user.name);
 
           socket.emit('message', {
             user: 'admin',

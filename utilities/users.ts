@@ -3,7 +3,7 @@ const Joi = require('joi');
 
 let users: Array<{ id: number; name: string }> = [];
 
-const validator = (name: string) => {
+const dataValidator = (name: string) => {
   /*   username is validated against the following rules:
     - is a required string
     -must contain only alphanumeric characters
@@ -11,7 +11,7 @@ const validator = (name: string) => {
     -shouldn't already exist
     */
   const schema = Joi.object({
-    username: Joi.string().alphanum().min(3).max(12).required(),
+    username: Joi.string().alphanum().min(3).max(20).required(),
   });
 
   const { error } = schema.validate({ username: name });
@@ -50,7 +50,7 @@ const getUser = (id: number) =>
 const getAllUsers = () => users;
 
 module.exports = {
-  validator,
+  dataValidator,
   addUser,
   removeUser,
   removeAllUsers,

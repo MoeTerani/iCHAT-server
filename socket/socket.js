@@ -3,8 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var winston = require('winston');
 var logger = require('../log/logger');
 var moment = require('moment');
-var _a = require('../utilities/users'), validator = _a.validator, addUser = _a.addUser, removeUser = _a.removeUser, getUser = _a.getUser, getAllUsers = _a.getAllUsers;
-var TimeOut;
+var _a = require('../utilities/users'), dataValidator = _a.dataValidator, addUser = _a.addUser, removeUser = _a.removeUser, getUser = _a.getUser, getAllUsers = _a.getAllUsers;
 // inactivity time in milliseconds
 var inactivityTime = 30000;
 var startTimeOut = function (socket, inactivityTime) {
@@ -31,13 +30,14 @@ var socketIoInit = function (server) {
         socket.on('join', function (_a, callback) {
             var name = _a.name;
             try {
-                validator(name);
-                var user = addUser({ id: socket.id, name: name, active: true }).user;
+                dataValidator(name);
+                var user = addUser({ id: socket.id, name: name }).user;
                 logger.info({
                     description: user.name + " has joined the chat!",
                     socketID: socket.id,
                     name: user.name,
                 });
+                socket.emit('successful-connection', user.name);
                 socket.emit('message', {
                     user: 'admin',
                     text: user.name + " welcome to the realtime chat ",
