@@ -44,7 +44,7 @@ var logger_1 = require("../log/logger");
 var moment_1 = __importDefault(require("moment"));
 var users_1 = require("../utilities/users");
 // inactivity time in milliseconds
-var inactivityTime = 3000000;
+var inactivityTime = 60000;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 var startTimeOut = function (socket, inactivityTime) {
     return setTimeout(function () {
@@ -139,7 +139,6 @@ var socketIoInit = function (server) {
         });
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         socket.on('disconnect', function (reason) {
-            console.log({ reason: reason });
             var user = users_1.removeUser(socket.id);
             if (user) {
                 io.emit('message', {

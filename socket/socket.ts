@@ -7,7 +7,7 @@ import { User } from '../types/types';
 import { dataValidator, addUser, removeUser, getUser, getAllUsers, getGitAvatar } from '../utilities/users';
 
 // inactivity time in milliseconds
-const inactivityTime = 3000000;
+const inactivityTime = 60000;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const startTimeOut = (socket: any, inactivityTime: number) =>
@@ -109,7 +109,6 @@ const socketIoInit = (server: any) => {
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         socket.on('disconnect', (reason: any) => {
-            console.log({ reason });
             const user = removeUser(socket.id);
 
             if (user) {
