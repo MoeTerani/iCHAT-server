@@ -8,6 +8,7 @@ Server side of a realtime chatroom.
 -   A username validation has been applied with corresponding Error messages.
 -   Users can use Github username to retrieve their github avatar.
 -   If a Nickname is used a random face avatar is fetched from the avatars.adorable.io/ api.
+-   Dark/Light mode is available.
 -   Sends received messages to all connected clients (no rooms).
 -   Client will be disconnected automatically by a configurable timeout.
 -   With any connection lost , corresponding Error messages will be send to the client and notifications to others in the chat.
