@@ -38,15 +38,17 @@ var socketIoInit = function (server) {
                     socketID: socket.id,
                     name: user.name,
                 });
-                socket.emit('successful-connection', user.name);
+                socket.emit('successful-connection', user.name, user.avatar);
                 socket.emit('message', {
                     user: 'admin',
                     text: user.name + " welcome to the realtime chat ",
+                    avatar: 'https://github.com/MoeTerani/Assets/blob/master/iCHAT/chat-bot.jpg?raw=true',
                     time: moment().format('LT'),
                 });
                 socket.broadcast.emit('message', {
                     user: 'admin',
                     text: user.name + " has joined!",
+                    avatar: 'https://github.com/MoeTerani/Assets/blob/master/iCHAT/chat-bot.jpg?raw=true',
                     time: moment().format('LT'),
                 });
                 // socket.join();
@@ -74,7 +76,12 @@ var socketIoInit = function (server) {
             clearTimeout(inactivity);
             inactivity = startTimeOut(socket, inactivityTime);
             var user = getUser(socket.id);
-            io.emit('message', { user: user.name, text: msg });
+            io.emit('message', {
+                user: user.name,
+                text: msg,
+                avatar: user.avatar,
+                time: moment().format('LT'),
+            });
             io.emit('activeUsers', {
                 users: getAllUsers(),
             });
@@ -87,6 +94,8 @@ var socketIoInit = function (server) {
                 io.emit('message', {
                     user: 'admin',
                     text: user.name + " left the chat!",
+                    avatar: 'https://github.com/MoeTerani/Assets/blob/master/iCHAT/chat-bot.jpg?raw=true',
+                    time: moment().format('LT'),
                 });
                 io.emit('activeUsers', {
                     users: getAllUsers(),
@@ -105,6 +114,8 @@ var socketIoInit = function (server) {
                 io.emit('message', {
                     user: 'admin',
                     text: user.name + " was disconnected due to\n        inactivity!",
+                    avatar: 'https://github.com/MoeTerani/Assets/blob/master/iCHAT/chat-bot.jpg?raw=true',
+                    time: moment().format('LT'),
                 });
             }
             logger.info({

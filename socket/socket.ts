@@ -52,17 +52,21 @@ const socketIoInit = (server: any) => {
             name: user.name,
           });
 
-          socket.emit('successful-connection', user.name);
+          socket.emit('successful-connection', user.name, user.avatar);
 
           socket.emit('message', {
             user: 'admin',
             text: `${user.name} welcome to the realtime chat `,
+            avatar:
+              'https://github.com/MoeTerani/Assets/blob/master/iCHAT/chat-bot.jpg?raw=true',
             time: moment().format('LT'),
           });
 
           socket.broadcast.emit('message', {
             user: 'admin',
             text: `${user.name} has joined!`,
+            avatar:
+              'https://github.com/MoeTerani/Assets/blob/master/iCHAT/chat-bot.jpg?raw=true',
             time: moment().format('LT'),
           });
 
@@ -96,7 +100,12 @@ const socketIoInit = (server: any) => {
       inactivity = startTimeOut(socket, inactivityTime);
       const user = getUser(socket.id);
 
-      io.emit('message', { user: user.name, text: msg });
+      io.emit('message', {
+        user: user.name,
+        text: msg,
+        avatar: user.avatar,
+        time: moment().format('LT'),
+      });
       io.emit('activeUsers', {
         users: getAllUsers(),
       });
@@ -112,6 +121,9 @@ const socketIoInit = (server: any) => {
         io.emit('message', {
           user: 'admin',
           text: `${user.name} left the chat!`,
+          avatar:
+            'https://github.com/MoeTerani/Assets/blob/master/iCHAT/chat-bot.jpg?raw=true',
+          time: moment().format('LT'),
         });
         io.emit('activeUsers', {
           users: getAllUsers(),
@@ -133,6 +145,9 @@ const socketIoInit = (server: any) => {
           user: 'admin',
           text: `${user.name} was disconnected due to
         inactivity!`,
+          avatar:
+            'https://github.com/MoeTerani/Assets/blob/master/iCHAT/chat-bot.jpg?raw=true',
+          time: moment().format('LT'),
         });
       }
       logger.info({
