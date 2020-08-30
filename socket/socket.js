@@ -35,34 +35,38 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-var winston = require('winston');
-var logger = require('../log/logger');
-var moment = require('moment');
-var _a = require('../utilities/users'), dataValidator = _a.dataValidator, addUser = _a.addUser, removeUser = _a.removeUser, getUser = _a.getUser, getAllUsers = _a.getAllUsers, getGitAvatar = _a.getGitAvatar;
+var winston_1 = __importDefault(require("winston"));
+var logger_1 = require("../log/logger");
+var moment_1 = __importDefault(require("moment"));
+var users_1 = require("../utilities/users");
 // inactivity time in milliseconds
-var inactivityTime = 600000;
+var inactivityTime = 3000000;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 var startTimeOut = function (socket, inactivityTime) {
     return setTimeout(function () {
         socket.emit('timeOut');
     }, inactivityTime);
 };
 // SOCKET.IO
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 var socketIoInit = function (server) {
-    var options = {
-    /* ... */
-    };
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     var io = require('socket.io').listen(server, {
         logger: {
-            debug: winston.debug,
-            info: winston.info,
-            error: winston.error,
-            warn: winston.warn,
+            debug: winston_1.default.debug,
+            info: winston_1.default.info,
+            error: winston_1.default.error,
+            warn: winston_1.default.warn,
         },
     });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     io.on('connection', function (socket) {
         var botAvatar = 'https://github.com/MoeTerani/Assets/blob/master/iCHAT/chat-bot.jpg?raw=true';
-        socket.on('join', function (_a, callback) {
+        socket.on('join', function (_a) {
             var name = _a.name;
             return __awaiter(void 0, void 0, void 0, function () {
                 var avatar, user, error_1;
@@ -70,12 +74,12 @@ var socketIoInit = function (server) {
                     switch (_b.label) {
                         case 0:
                             _b.trys.push([0, 2, , 3]);
-                            dataValidator(name);
-                            return [4 /*yield*/, getGitAvatar(name)];
+                            users_1.dataValidator(name);
+                            return [4 /*yield*/, users_1.getGitAvatar(name)];
                         case 1:
                             avatar = _b.sent();
-                            user = addUser({ id: socket.id, name: name, avatar: avatar }).user;
-                            logger.info({
+                            user = users_1.addUser({ id: socket.id, name: name, avatar: avatar }).user;
+                            logger_1.logger.info({
                                 description: user.name + " has joined the chat!",
                                 socketID: socket.id,
                                 name: user.name,
@@ -85,22 +89,23 @@ var socketIoInit = function (server) {
                                 user: 'admin',
                                 text: user.name + " welcome to the realtime chat ",
                                 avatar: botAvatar,
-                                time: moment().format('LT'),
+                                time: moment_1.default().format('LT'),
                             });
                             socket.broadcast.emit('message', {
                                 user: 'admin',
                                 text: user.name + " has joined!",
                                 avatar: botAvatar,
-                                time: moment().format('LT'),
+                                time: moment_1.default().format('LT'),
                             });
+                            // socket.join();
                             io.emit('activeUsers', {
-                                users: getAllUsers(),
+                                users: users_1.getAllUsers(),
                             });
                             return [3 /*break*/, 3];
                         case 2:
                             error_1 = _b.sent();
                             socket.emit('login_error', { errorMessage: error_1.message });
-                            logger.error({
+                            logger_1.logger.error({
                                 description: 'Login Fail',
                                 reason: error_1.message,
                                 socketID: socket.id,
@@ -114,34 +119,39 @@ var socketIoInit = function (server) {
         });
         var inactivity = startTimeOut(socket, inactivityTime);
         socket.on('sendMessage', function (msg, callback) {
+            // if (inactivity) {
+            //   clearTimeout(inactivity);
+            //   inactivity = null;
+            // }
             clearTimeout(inactivity);
             inactivity = startTimeOut(socket, inactivityTime);
-            var user = getUser(socket.id);
+            var user = users_1.getUser(socket.id);
             io.emit('message', {
-                user: user.name,
+                user: user === null || user === void 0 ? void 0 : user.name,
                 text: msg,
-                avatar: user.avatar,
-                time: moment().format('LT'),
+                avatar: user === null || user === void 0 ? void 0 : user.avatar,
+                time: moment_1.default().format('LT'),
             });
             io.emit('activeUsers', {
-                users: getAllUsers(),
+                users: users_1.getAllUsers(),
             });
             callback();
         });
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         socket.on('disconnect', function (reason) {
             console.log({ reason: reason });
-            var user = removeUser(socket.id);
+            var user = users_1.removeUser(socket.id);
             if (user) {
                 io.emit('message', {
                     user: 'admin',
                     text: user.name + " left the chat!",
                     avatar: botAvatar,
-                    time: moment().format('LT'),
+                    time: moment_1.default().format('LT'),
                 });
                 io.emit('activeUsers', {
-                    users: getAllUsers(),
+                    users: users_1.getAllUsers(),
                 });
-                logger.info({
+                logger_1.logger.info({
                     description: user.name + " has been disconnected!",
                     socketID: socket.id,
                     name: user.name,
@@ -150,19 +160,19 @@ var socketIoInit = function (server) {
             }
         });
         socket.on('inActiveUser', function () {
-            var user = removeUser(socket.id);
+            var user = users_1.removeUser(socket.id);
             if (user) {
                 io.emit('message', {
                     user: 'admin',
                     text: user.name + " was disconnected due to\n        inactivity!",
                     avatar: botAvatar,
-                    time: moment().format('LT'),
+                    time: moment_1.default().format('LT'),
                 });
             }
-            logger.info({
-                description: user.name + "has been disconnected due to inactivity!",
+            logger_1.logger.info({
+                description: (user === null || user === void 0 ? void 0 : user.name) + "has been disconnected due to inactivity!",
                 socketID: socket.id,
-                name: user.name,
+                name: user === null || user === void 0 ? void 0 : user.name,
             });
             socket.disconnect(true);
         });

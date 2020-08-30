@@ -35,19 +35,22 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-var Joi = require('joi');
-var axios = require('axios');
+var joi_1 = __importDefault(require("joi"));
+var axios_1 = __importDefault(require("axios"));
 var users = [];
-var dataValidator = function (name) {
+exports.dataValidator = function (name) {
     /*   username is validated against the following rules:
-      - is a required string
-      -must contain only alphanumeric characters
-      -at least 3 characters long but no more than 12
-      -shouldn't already exist
-      */
-    var schema = Joi.object({
-        username: Joi.string().min(3).max(20).required(),
+    - is a required string
+    -must contain only alphanumeric characters
+    -at least 3 characters long but no more than 12
+    -shouldn't already exist
+    */
+    var schema = joi_1.default.object({
+        username: joi_1.default.string().min(3).max(20).required(),
     });
     var error = schema.validate({ username: name }).error;
     if (error) {
@@ -61,18 +64,21 @@ var dataValidator = function (name) {
     }
 };
 // Get github avatar if exist else get random robot avatar from adorable API
-var getGitAvatar = function (name) { return __awaiter(void 0, void 0, void 0, function () {
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+exports.getGitAvatar = function (name) { return __awaiter(void 0, void 0, void 0, function () {
     var gitUserPublic;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, axios
+            case 0: return [4 /*yield*/, axios_1.default
                     .get("https://api.github.com/users/" + name)
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .then(function (res) {
                     if (res.status === 200) {
                         var avatar = res.data.avatar_url;
                         return avatar;
                     }
                 })
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .catch(function (err) {
                     if (err.response.status === 404) {
                         var avatar = "https://api.adorable.io/avatars/285/" + name + "@adorable.png";
@@ -85,29 +91,18 @@ var getGitAvatar = function (name) { return __awaiter(void 0, void 0, void 0, fu
         }
     });
 }); };
-var addUser = function (_a) {
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+exports.addUser = function (_a) {
     var id = _a.id, name = _a.name, avatar = _a.avatar;
     var user = { id: id, name: name, avatar: avatar };
     users.push(user);
     return { user: user };
 };
-var removeUser = function (id) {
+exports.removeUser = function (id) {
     var index = users.findIndex(function (user) { return user.id === id; });
     if (index !== -1)
         return users.splice(index, 1)[0];
 };
-var removeAllUsers = function () { return users.splice(0, users.length); };
-var getUser = function (id) {
-    return users.find(function (user) { return user.id === id; });
-};
-// const getAllUsers = () => users.filter((user) => user);
-var getAllUsers = function () { return users; };
-module.exports = {
-    dataValidator: dataValidator,
-    addUser: addUser,
-    removeUser: removeUser,
-    removeAllUsers: removeAllUsers,
-    getUser: getUser,
-    getAllUsers: getAllUsers,
-    getGitAvatar: getGitAvatar,
-};
+exports.removeAllUsers = function () { return users.splice(0, users.length); };
+exports.getUser = function (id) { return users.find(function (user) { return user.id === id; }); };
+exports.getAllUsers = function () { return users; };

@@ -1,5 +1,6 @@
 {
-    "cSpell.words": [
-        "alphanum"
-    ]
+    "cSpell.words": ["alphanum"],
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    }
 }
