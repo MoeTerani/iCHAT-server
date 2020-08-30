@@ -1,5 +1,6 @@
 export {};
 const Joi = require('joi');
+const axios = require('axios');
 
 let users: Array<{ id: number; name: string }> = [];
 
@@ -26,6 +27,26 @@ const dataValidator = (name: string) => {
   if (existingUser) {
     throw new Error('This username is taken.');
   }
+};
+
+// Get github avatar if exist else get random robot avatar from adorable API
+const getGitAvatar = async (name: string) => {
+  const gitUserPublic = await axios
+    .get(`https://api.github.com/users/${name}`)
+    .then((res: any) => {
+      if (res.status === 200) {
+        const avatar = res.data.avatar_url;
+        return avatar;
+      }
+    })
+    .catch((err: any) => {
+      if (err.response.status === 404) {
+        const avatar = `https://api.adorable.io/avatars/285/${name}@adorable.png`;
+        return avatar;
+      }
+    });
+
+  return gitUserPublic;
 };
 
 const addUser = ({
@@ -64,4 +85,5 @@ module.exports = {
   removeAllUsers,
   getUser,
   getAllUsers,
+  getGitAvatar,
 };

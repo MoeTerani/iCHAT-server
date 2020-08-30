@@ -2,6 +2,7 @@ export {};
 const winston = require('winston');
 const logger = require('../log/logger');
 const moment = require('moment');
+const axios = require('axios');
 
 const {
   dataValidator,
@@ -9,6 +10,7 @@ const {
   removeUser,
   getUser,
   getAllUsers,
+  getGitAvatar,
 } = require('../utilities/users');
 
 // inactivity time in milliseconds
@@ -39,11 +41,23 @@ const socketIoInit = (server: any) => {
 
     socket.on(
       'join',
-      ({ name }: { name: string }, callback: (arg?: any) => void) => {
+      async ({ name }: { name: string }, callback: (arg?: any) => void) => {
         try {
           dataValidator(name);
-          let avatar =
-            'https://avatars2.githubusercontent.com/u/30356761?s=400&u=d7843e8ce40d3e48e2bb4a06f244c59af51c92ef&v=4';
+          // Github Avatar Start
+
+          // const uri = encodeURI(
+          //   `https://api.github.com/users/${req.params.username}/repos?per_page=5&sort=created:asc`
+          // );
+          // const headers = {
+          //   'user-agent': 'node.js',
+          //   Authorization: `token ${config.get('githubToken')}`,
+          // };
+          // const gitHubResponse = await axios.get(uri, { headers });
+          let avatar = await getGitAvatar(name);
+          console.log(avatar);
+
+          // Github Avatar End
           const { user } = addUser({ id: socket.id, name, avatar });
 
           logger.info({
@@ -79,6 +93,10 @@ const socketIoInit = (server: any) => {
           //   callback();
         } catch (error) {
           socket.emit('login_error', { errorMessage: error.message });
+          if (error.message === 'Request failed with status code 404') {
+            let avatar =
+              'https://avatars2.githubusercontent.com/u/30356761?s=400&u=d7843e8ce40d3e48e2bb4a06f244c59af51c92ef&v=4';
+          }
 
           logger.error({
             description: 'Login Fail',
