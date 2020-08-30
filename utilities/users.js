@@ -47,7 +47,7 @@ var dataValidator = function (name) {
       -shouldn't already exist
       */
     var schema = Joi.object({
-        username: Joi.string().alphanum().min(3).max(20).required(),
+        username: Joi.string().min(3).max(20).required(),
     });
     var error = schema.validate({ username: name }).error;
     if (error) {

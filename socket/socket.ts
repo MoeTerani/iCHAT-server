@@ -2,7 +2,6 @@ export {};
 const winston = require('winston');
 const logger = require('../log/logger');
 const moment = require('moment');
-const axios = require('axios');
 
 const {
   dataValidator,
@@ -14,7 +13,7 @@ const {
 } = require('../utilities/users');
 
 // inactivity time in milliseconds
-const inactivityTime = 3000000;
+const inactivityTime = 600000;
 
 const startTimeOut = (socket: any, inactivityTime: number) =>
   setTimeout(() => {
@@ -36,28 +35,18 @@ const socketIoInit = (server: any) => {
   });
 
   io.on('connection', (socket: any) => {
-    /* ... */
-    let errorMessage = ' ';
+    const botAvatar =
+      'https://github.com/MoeTerani/Assets/blob/master/iCHAT/chat-bot.jpg?raw=true';
 
     socket.on(
       'join',
       async ({ name }: { name: string }, callback: (arg?: any) => void) => {
         try {
           dataValidator(name);
-          // Github Avatar Start
 
-          // const uri = encodeURI(
-          //   `https://api.github.com/users/${req.params.username}/repos?per_page=5&sort=created:asc`
-          // );
-          // const headers = {
-          //   'user-agent': 'node.js',
-          //   Authorization: `token ${config.get('githubToken')}`,
-          // };
-          // const gitHubResponse = await axios.get(uri, { headers });
+          // Github Avatar
           let avatar = await getGitAvatar(name);
-          console.log(avatar);
 
-          // Github Avatar End
           const { user } = addUser({ id: socket.id, name, avatar });
 
           logger.info({
@@ -71,32 +60,22 @@ const socketIoInit = (server: any) => {
           socket.emit('message', {
             user: 'admin',
             text: `${user.name} welcome to the realtime chat `,
-            avatar:
-              'https://github.com/MoeTerani/Assets/blob/master/iCHAT/chat-bot.jpg?raw=true',
+            avatar: botAvatar,
             time: moment().format('LT'),
           });
 
           socket.broadcast.emit('message', {
             user: 'admin',
             text: `${user.name} has joined!`,
-            avatar:
-              'https://github.com/MoeTerani/Assets/blob/master/iCHAT/chat-bot.jpg?raw=true',
+            avatar: botAvatar,
             time: moment().format('LT'),
           });
-
-          // socket.join();
 
           io.emit('activeUsers', {
             users: getAllUsers(),
           });
-
-          //   callback();
         } catch (error) {
           socket.emit('login_error', { errorMessage: error.message });
-          if (error.message === 'Request failed with status code 404') {
-            let avatar =
-              'https://avatars2.githubusercontent.com/u/30356761?s=400&u=d7843e8ce40d3e48e2bb4a06f244c59af51c92ef&v=4';
-          }
 
           logger.error({
             description: 'Login Fail',
@@ -110,10 +89,6 @@ const socketIoInit = (server: any) => {
     );
     let inactivity = startTimeOut(socket, inactivityTime);
     socket.on('sendMessage', (msg: string, callback: () => void) => {
-      // if (inactivity) {
-      //   clearTimeout(inactivity);
-      //   inactivity = null;
-      // }
       clearTimeout(inactivity);
       inactivity = startTimeOut(socket, inactivityTime);
       const user = getUser(socket.id);
@@ -139,8 +114,7 @@ const socketIoInit = (server: any) => {
         io.emit('message', {
           user: 'admin',
           text: `${user.name} left the chat!`,
-          avatar:
-            'https://github.com/MoeTerani/Assets/blob/master/iCHAT/chat-bot.jpg?raw=true',
+          avatar: botAvatar,
           time: moment().format('LT'),
         });
         io.emit('activeUsers', {
@@ -163,8 +137,7 @@ const socketIoInit = (server: any) => {
           user: 'admin',
           text: `${user.name} was disconnected due to
         inactivity!`,
-          avatar:
-            'https://github.com/MoeTerani/Assets/blob/master/iCHAT/chat-bot.jpg?raw=true',
+          avatar: botAvatar,
           time: moment().format('LT'),
         });
       }

@@ -1,5 +1,4 @@
 export {};
-import { error } from 'console';
 import * as express from 'express';
 
 const router = express.Router();

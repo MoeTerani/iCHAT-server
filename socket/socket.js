@@ -39,10 +39,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var winston = require('winston');
 var logger = require('../log/logger');
 var moment = require('moment');
-var axios = require('axios');
 var _a = require('../utilities/users'), dataValidator = _a.dataValidator, addUser = _a.addUser, removeUser = _a.removeUser, getUser = _a.getUser, getAllUsers = _a.getAllUsers, getGitAvatar = _a.getGitAvatar;
 // inactivity time in milliseconds
-var inactivityTime = 3000000;
+var inactivityTime = 600000;
 var startTimeOut = function (socket, inactivityTime) {
     return setTimeout(function () {
         socket.emit('timeOut');
@@ -62,12 +61,11 @@ var socketIoInit = function (server) {
         },
     });
     io.on('connection', function (socket) {
-        /* ... */
-        var errorMessage = ' ';
+        var botAvatar = 'https://github.com/MoeTerani/Assets/blob/master/iCHAT/chat-bot.jpg?raw=true';
         socket.on('join', function (_a, callback) {
             var name = _a.name;
             return __awaiter(void 0, void 0, void 0, function () {
-                var avatar, user, error_1, avatar;
+                var avatar, user, error_1;
                 return __generator(this, function (_b) {
                     switch (_b.label) {
                         case 0:
@@ -76,7 +74,6 @@ var socketIoInit = function (server) {
                             return [4 /*yield*/, getGitAvatar(name)];
                         case 1:
                             avatar = _b.sent();
-                            console.log(avatar);
                             user = addUser({ id: socket.id, name: name, avatar: avatar }).user;
                             logger.info({
                                 description: user.name + " has joined the chat!",
@@ -87,16 +84,15 @@ var socketIoInit = function (server) {
                             socket.emit('message', {
                                 user: 'admin',
                                 text: user.name + " welcome to the realtime chat ",
-                                avatar: 'https://github.com/MoeTerani/Assets/blob/master/iCHAT/chat-bot.jpg?raw=true',
+                                avatar: botAvatar,
                                 time: moment().format('LT'),
                             });
                             socket.broadcast.emit('message', {
                                 user: 'admin',
                                 text: user.name + " has joined!",
-                                avatar: 'https://github.com/MoeTerani/Assets/blob/master/iCHAT/chat-bot.jpg?raw=true',
+                                avatar: botAvatar,
                                 time: moment().format('LT'),
                             });
-                            // socket.join();
                             io.emit('activeUsers', {
                                 users: getAllUsers(),
                             });
@@ -104,9 +100,6 @@ var socketIoInit = function (server) {
                         case 2:
                             error_1 = _b.sent();
                             socket.emit('login_error', { errorMessage: error_1.message });
-                            if (error_1.message === 'Request failed with status code 404') {
-                                avatar = 'https://avatars2.githubusercontent.com/u/30356761?s=400&u=d7843e8ce40d3e48e2bb4a06f244c59af51c92ef&v=4';
-                            }
                             logger.error({
                                 description: 'Login Fail',
                                 reason: error_1.message,
@@ -121,10 +114,6 @@ var socketIoInit = function (server) {
         });
         var inactivity = startTimeOut(socket, inactivityTime);
         socket.on('sendMessage', function (msg, callback) {
-            // if (inactivity) {
-            //   clearTimeout(inactivity);
-            //   inactivity = null;
-            // }
             clearTimeout(inactivity);
             inactivity = startTimeOut(socket, inactivityTime);
             var user = getUser(socket.id);
@@ -146,7 +135,7 @@ var socketIoInit = function (server) {
                 io.emit('message', {
                     user: 'admin',
                     text: user.name + " left the chat!",
-                    avatar: 'https://github.com/MoeTerani/Assets/blob/master/iCHAT/chat-bot.jpg?raw=true',
+                    avatar: botAvatar,
                     time: moment().format('LT'),
                 });
                 io.emit('activeUsers', {
@@ -166,7 +155,7 @@ var socketIoInit = function (server) {
                 io.emit('message', {
                     user: 'admin',
                     text: user.name + " was disconnected due to\n        inactivity!",
-                    avatar: 'https://github.com/MoeTerani/Assets/blob/master/iCHAT/chat-bot.jpg?raw=true',
+                    avatar: botAvatar,
                     time: moment().format('LT'),
                 });
             }

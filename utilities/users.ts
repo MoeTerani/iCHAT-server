@@ -12,7 +12,7 @@ const dataValidator = (name: string) => {
     -shouldn't already exist
     */
   const schema = Joi.object({
-    username: Joi.string().alphanum().min(3).max(20).required(),
+    username: Joi.string().min(3).max(20).required(),
   });
 
   const { error } = schema.validate({ username: name });
