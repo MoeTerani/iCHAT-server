@@ -51,11 +51,21 @@ var startTimeOut = function (socket, inactivityTime) {
         socket.emit('timeOut');
     }, inactivityTime);
 };
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+var io;
+exports.clients = function () {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    io.clients(function (error, clients) {
+        if (error)
+            console.log(error);
+        console.log(clients); // => [6em3d4TJP8Et9EMNAAAA, G5p55dHhGgUnLUctAAAB]
+    });
+};
 // SOCKET.IO
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 var socketIoInit = function (server) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    var io = require('socket.io').listen(server, {
+    io = require('socket.io').listen(server, {
         logger: {
             debug: winston_1.default.debug,
             info: winston_1.default.info,
@@ -100,6 +110,13 @@ var socketIoInit = function (server) {
                             // socket.join();
                             io.emit('activeUsers', {
                                 users: users_1.getAllUsers(),
+                            });
+                            //   callback();
+                            io.clients(function (error, clients) {
+                                if (error)
+                                    console.log(error);
+                                exports.allConnectedSockets = clients;
+                                console.log({ allConnectedSockets: exports.allConnectedSockets }); // => [6em3d4TJP8Et9EMNAAAA, G5p55dHhGgUnLUctAAAB]
                             });
                             return [3 /*break*/, 3];
                         case 2:

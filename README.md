@@ -44,4 +44,8 @@ After cloning the repository:
 
 -   start by running `npm i` inside the `root folder` and then `npm run server`.
 
+## Linter
+
+Eslint/Tslint and prettier has been applied in strict mode.
+
 ## 😎 Enjoy

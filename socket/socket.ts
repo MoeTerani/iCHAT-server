@@ -8,18 +8,28 @@ import { dataValidator, addUser, removeUser, getUser, getAllUsers, getGitAvatar 
 
 // inactivity time in milliseconds
 const inactivityTime = 60000;
+export let allConnectedSockets: any;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const startTimeOut = (socket: any, inactivityTime: number) =>
     setTimeout(() => {
         socket.emit('timeOut');
     }, inactivityTime);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let io: any;
 
+export const clients = () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    io.clients((error: any, clients: any) => {
+        if (error) console.log(error);
+        console.log(clients); // => [6em3d4TJP8Et9EMNAAAA, G5p55dHhGgUnLUctAAAB]
+    });
+};
 // SOCKET.IO
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const socketIoInit = (server: any) => {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const io = require('socket.io').listen(server, {
+    io = require('socket.io').listen(server, {
         logger: {
             debug: winston.debug,
             info: winston.info,
@@ -71,6 +81,11 @@ const socketIoInit = (server: any) => {
                 });
 
                 //   callback();
+                io.clients((error: any, clients: any) => {
+                    if (error) console.log(error);
+                    allConnectedSockets = clients;
+                    console.log({ allConnectedSockets }); // => [6em3d4TJP8Et9EMNAAAA, G5p55dHhGgUnLUctAAAB]
+                });
             } catch (error) {
                 socket.emit('login_error', { errorMessage: error.message });
 
