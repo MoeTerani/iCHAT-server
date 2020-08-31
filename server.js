@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 var app = require('express')();
 var server = require('http').createServer(app);
 var cors = require('cors');
