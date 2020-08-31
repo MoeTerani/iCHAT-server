@@ -4,19 +4,19 @@
 
 ## https://ichat-client.netlify.app/
 
-Be patient on first log-in. The Heruko servers needs some seconds to start the server.
+Be patient on the first log-in. The Heruko server needs some time to get up and running.
 <br/><br/>
 
 ### Server side of a realtime chatroom.
 
--   It has protected routes. chat page is not accessible without authentication.
+-   It has protected routes. The chat page is not accessible without authentication.
 -   A username validation has been applied with corresponding Error messages.
--   Users can use Github username to retrieve their github avatar.
--   If a Nickname is used a random face avatar is fetched from the avatars.adorable.io/ api.
+-   Users can use Github username to retrieve their Github avatar.
+-   If a Nickname is used, a random face avatar is fetched from the avatars.adorable.io/ API.
 -   Dark/Light mode is available.
--   Sends received messages to all connected clients (no rooms).
--   Client will be disconnected automatically by a configurable timeout.
--   With any connection lost , corresponding Error messages will be send to the client and notifications to others in the chat.
+-   Send and received messages to all connected clients (no rooms).
+-   The client will be disconnected automatically by a configurable timeout.
+-   With any connection loss, corresponding Error messages will be sent to the client and notifications to others in the chat.
 -   Provides readable logging solution
 -   Terminates gracefully upon receiving SIGINT or SIGTERM.
     <br/><br/>
