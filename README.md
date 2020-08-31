@@ -1,6 +1,8 @@
 # iCHAT
 
-<!-- ## 🖥 Live Demo -->
+## 🖥 Live Demo
+
+https://ichat-client.netlify.app/
 
 Server side of a realtime chatroom.
 
