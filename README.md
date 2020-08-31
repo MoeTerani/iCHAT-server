@@ -15,6 +15,7 @@ Server side of a realtime chatroom.
 -   Client will be disconnected automatically by a configurable timeout.
 -   With any connection lost , corresponding Error messages will be send to the client and notifications to others in the chat.
 -   Provides readable logging solution
+-   Terminates gracefully upon receiving SIGINT or SIGTERM.
 
 ## 👨‍💻 Tech stack
 
@@ -37,6 +38,7 @@ Server side of a realtime chatroom.
 -   cors
 -   Github API
 -   Adorable.io API
+-   Terminus
 
 ## 🔥 Getting started
 

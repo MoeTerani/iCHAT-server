@@ -44,28 +44,18 @@ var logger_1 = require("../log/logger");
 var moment_1 = __importDefault(require("moment"));
 var users_1 = require("../utilities/users");
 // inactivity time in milliseconds
-var inactivityTime = 60000;
+var inactivityTime = 180000;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 var startTimeOut = function (socket, inactivityTime) {
     return setTimeout(function () {
         socket.emit('timeOut');
     }, inactivityTime);
 };
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-var io;
-exports.clients = function () {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    io.clients(function (error, clients) {
-        if (error)
-            console.log(error);
-        console.log(clients); // => [6em3d4TJP8Et9EMNAAAA, G5p55dHhGgUnLUctAAAB]
-    });
-};
 // SOCKET.IO
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 var socketIoInit = function (server) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    io = require('socket.io').listen(server, {
+    var io = require('socket.io').listen(server, {
         logger: {
             debug: winston_1.default.debug,
             info: winston_1.default.info,
@@ -107,16 +97,8 @@ var socketIoInit = function (server) {
                                 avatar: botAvatar,
                                 time: moment_1.default().format('LT'),
                             });
-                            // socket.join();
                             io.emit('activeUsers', {
                                 users: users_1.getAllUsers(),
-                            });
-                            //   callback();
-                            io.clients(function (error, clients) {
-                                if (error)
-                                    console.log(error);
-                                exports.allConnectedSockets = clients;
-                                console.log({ allConnectedSockets: exports.allConnectedSockets }); // => [6em3d4TJP8Et9EMNAAAA, G5p55dHhGgUnLUctAAAB]
                             });
                             return [3 /*break*/, 3];
                         case 2:
@@ -136,10 +118,6 @@ var socketIoInit = function (server) {
         });
         var inactivity = startTimeOut(socket, inactivityTime);
         socket.on('sendMessage', function (msg, callback) {
-            // if (inactivity) {
-            //   clearTimeout(inactivity);
-            //   inactivity = null;
-            // }
             clearTimeout(inactivity);
             inactivity = startTimeOut(socket, inactivityTime);
             var user = users_1.getUser(socket.id);
@@ -185,6 +163,9 @@ var socketIoInit = function (server) {
                     time: moment_1.default().format('LT'),
                 });
             }
+            io.emit('activeUsers', {
+                users: users_1.getAllUsers(),
+            });
             logger_1.logger.info({
                 description: (user === null || user === void 0 ? void 0 : user.name) + "has been disconnected due to inactivity!",
                 socketID: socket.id,
