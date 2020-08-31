@@ -39,12 +39,17 @@ Server side of a realtime chatroom.
 -   Github API
 -   Adorable.io API
 -   Terminus
+-   Jest
 
 ## 🔥 Getting started
 
 After cloning the repository:
 
--   start by running `npm i` inside the `root folder` and then `npm run server`.
+-   start by running `npm i` inside the root directory and then `npm run server`.
+
+## Test
+
+-   In order to run the tests run `npm test` inside the root directory.
 
 ## Linter
 
